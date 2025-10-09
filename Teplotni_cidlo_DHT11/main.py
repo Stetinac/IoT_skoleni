@@ -27,16 +27,24 @@ def LED_blink(temp:int ) -> None:
         # kdyz je teplota pod 0 stupnu, rozsvit LED na 2s
         if temp < 0:
             led.on()
+#            print("blik minus")
             time.sleep(2)
             led.off()
-
-      # blikni podle hodnoty
-        for x in str(temp):
-            for _ in range (0, int(x)):
+        for x in str(abs(temp)):
+            # pokud se hodnota rovna nule rozsvit didou na 4s
+            if int(x) == 0:
                 led.on()
-                time.sleep(0.25)
+#               print("blik nula")
+                time.sleep(4)
                 led.off()
-
+            else:
+                # blikni podle hodnoty
+                for _ in range (0, int(x)):
+                    led.on()
+#                    print("blik")
+                    time.sleep(0.25)
+                    led.off()
+#            print(50 * "*")
     # kdyz je nula rozsvit na 4s
     else:
         led.on()
@@ -44,6 +52,7 @@ def LED_blink(temp:int ) -> None:
         led.off()
     # pauza 2s pred dalsim pokracovanim vycitani dat
     # kdyz se objevi chyba, tato cast kodu se nespusti a system nebude cekat 2s na dalsi cteni
+    print(50 * "#")
     time.sleep(2)
 
 # smycka pro opakovane vycitani hodnoty
@@ -65,3 +74,4 @@ while True:
         dhtDevice.exit()
         raise error
     time.sleep(1.0)
+
