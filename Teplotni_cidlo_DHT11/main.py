@@ -48,7 +48,7 @@ def LED_blink(temp:int ) -> None:
     # kdyz je nula rozsvit na 4s
     else:
         led.on()
-        time.sllep(4)
+        time.sleep(4)
         led.off()
     # pauza 2s pred dalsim pokracovanim vycitani dat
     # kdyz se objevi chyba, tato cast kodu se nespusti a system nebude cekat 2s na dalsi cteni
@@ -74,4 +74,5 @@ while True:
         dhtDevice.exit()
         raise error
     time.sleep(1.0)
+
 
