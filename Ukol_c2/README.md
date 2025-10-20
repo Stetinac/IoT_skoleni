@@ -9,7 +9,7 @@ Zobrazení uložených dat s použitím  vybraných filtrů jako je MIN, MAX, AV
 4. sqlite3 instalovaný v rámci OS
 
 ## Zapojeni sezoru a RPi
-![RPi and BME280 wiring](wiring_rpi.png "Zapojeni RPi a BME280)
+![RPi and BME280 wiring](wiring_rpi.png)
 
 ## Instalace prostředí Python
 ```
