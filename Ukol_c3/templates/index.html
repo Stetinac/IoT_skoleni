@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>    
+    <link href= "{{ url_for('static',filename='bootstrap.min.css') }}" rel= "stylesheet" type= "text/css">
+    <script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>   
+    <script>
+        async function fetchData() {
+            const response = await fetch('/api/data');
+            const data = await response.json();
+            document.getElementById('temperature-value').innerHTML = data.temp;
+            document.getElementById('humidity-value').innerHTML = data.humi;
+            document.getElementById('pree-value').innerHTML = data.press;
+        }
+        setInterval(fetchData, 5000); // Fetch data every 5 seconds
+    </script>
+</head>
+<body>
+  <div class="container my-5">
+    <!-- Page Title -->
+    <div class="mb-4">
+      <h1>RPi Dashboard</h1>
+      <p class="lead">Real-time data</p>
+    </div>
+    <div class="row">
+      <!-- Temperature Card -->
+      <div class="col-md-4">
+        <div class="card bg-danger-subtle mb-3">
+          <div class="card-header text-center fw-bold">Teplota</div>
+          <div class="card-body d-flex justify-content-center align-items-center">
+            <div class="display-6"><span id="temperature-value">{{ temp }}</span> °C</div>
+          </div>
+        </div>
+      </div>
+      <!-- Humidity Card -->
+      <div class="col-md-4">
+        <div class="card bg-primary-subtle mb-3">
+          <div class="card-header text-center fw-bold">Relativní vhkost</div>
+          <div class="card-body d-flex justify-content-center align-items-center">
+            <div class="display-6"><span id="humidity-value">{{ humi }}</span> %</div>
+          </div>
+        </div>
+      </div>
+      <!-- Pressure Card -->
+      <div class="col-md-4">
+        <div class="card bg-secondary-subtle mb-3">
+          <div class="card-header text-center fw-bold">Atmosférický tlak</div>
+          <div class="card-body d-flex justify-content-center align-items-center">
+            <div class="display-6"><span id="pree-value">{{ presso }}</span> hPa</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
