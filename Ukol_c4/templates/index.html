@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>    
+    <link href= "{{ url_for('static',filename='bootstrap.min.css') }}" rel= "stylesheet" type= "text/css">
+    <script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+<body>
+  <div class="container my-5">
+    <!-- Page Title -->
+    <div class="mb-4">
+      <h1>RPi Dashboard</h1>
+      <p class="lead">Last data: <span id="timestamp-value">{{ timestamp }}</span></p>
+    </div>
+    <div class="row">
+      <!-- Temperature Card -->
+      <div class="col-md-4">
+        <div class="card bg-danger-subtle mb-3">
+          <div class="card-header text-center fw-bold">Teplota</div>
+          <div class="card-body d-flex justify-content-center align-items-center">
+            <div class="display-6"><span id="temperature-value">{{ temp }}</span> °C</div>
+          </div>
+        </div>
+      </div>
+      <!-- Humidity Card -->
+      <div class="col-md-4">
+        <div class="card bg-primary-subtle mb-3">
+          <div class="card-header text-center fw-bold">Relativní vlhkost</div>
+          <div class="card-body d-flex justify-content-center align-items-center">
+            <div class="display-6"><span id="humidity-value">{{ humi }}</span> %</div>
+          </div>
+        </div>
+      </div>
+      <!-- Pressure Card -->
+      <div class="col-md-4">
+        <div class="card bg-secondary-subtle mb-3">
+          <div class="card-header text-center fw-bold">Atmosférický tlak</div>
+          <div class="card-body d-flex justify-content-center align-items-center">
+            <div class="display-6"><span id="pree-value">{{ presso }}</span> hPa</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card bg-danger-subtle mb-3">
+            <div class="card-header text-center fw-bold">Topení</div>
+            <div class="card-body d-flex flex-column justify-content-center align-items-center gap-2">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="manSwitch">
+                    <label class="form-check-label" for="manSwitch">Manual/Termostat</label>
+                </div>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="ledSwitch">
+                    <label class="form-check-label" for="ledSwitch">Vypnuto/Zapnuto</label>
+                </div>
+            </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card bg-primary-subtle mb-3">
+            <div class="card-header text-center fw-bold">Termostat</div>
+            <div class="card-body">
+                <label for="slider" class="form-label">Aktuální hodnota: <span id="sliderValue">{{ slider }}</span>°C</label>
+                <input type="range" class="form-range" min="-10" max="40" step="1" id="slider" value="{{ slider }}">
+            </div>
+        </div>
+      </div>
+    
+  </div>
+ </div>
+</body>
+
+<script>
+
+const slider = document.getElementById('slider');
+const sliderValue = document.getElementById('sliderValue');
+const ledSwitch = document.getElementById('ledSwitch');
+// --- Slider ---
+// Zobraz aktuální hodnotu při pohybu
+slider.addEventListener('input', () => {
+    sliderValue.textContent = slider.value;
+});
+
+// Po uvolnění slideru pošli hodnotu na API
+slider.addEventListener('change', async () => {
+    const value = parseInt(slider.value);
+    try {
+        await fetch('/api/slider', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ slider: value })
+        });
+    } catch (err) {
+        console.error('Chyba při odesílání slider hodnoty:', err);
+    }
+});
+
+// --- Switch ---
+// Posílá stav on/off do API při změně
+document.addEventListener('DOMContentLoaded', function () {
+    // Seznam přepínačů a jejich klíčů v JSON
+    const switches = [
+        {id: 'ledSwitch', key: 'state'},
+        {id: 'manSwitch', key: 'manstate'}
+    ];
+
+    switches.forEach(item => {
+        const element = document.getElementById(item.id);
+        if (element) {
+            element.addEventListener('change', async function () {
+                const state = element.checked ? 'on' : 'off';
+
+                try {
+                    await fetch('/api/switch', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ [item.key]: state }) // dynamický klíč
+                    });
+                    console.log(`Switch ${item.id} updated: ${item.key}=${state}`);
+                } catch (error) {
+                    console.error('Chyba při odesílání stavu přepínače:', error);
+                }
+            });
+        }
+    });
+});
+
+// aktualiazce dat kazdych 5s
+async function fetchData() {
+    const response = await fetch('/api/data');
+    const data = await response.json();
+    document.getElementById('timestamp-value').innerHTML = data.timestamp;
+    document.getElementById('temperature-value').innerHTML = data.temp;
+    document.getElementById('humidity-value').innerHTML = data.humi;
+    document.getElementById('pree-value').innerHTML = data.press;
+    document.getElementById('ledSwitch').checked = data.led === 'on';
+    document.getElementById('manSwitch').checked = data.man === 'on';
+
+    // --- Aktualizace slideru ---
+    const slider = document.getElementById('slider');
+    const sliderValue = document.getElementById('sliderValue');
+    if(slider && sliderValue) {
+        slider.value = data.slider;          // nastav slider
+        sliderValue.textContent = data.slider; // zobraz hodnotu
+    }
+}
+setInterval(fetchData, 5000); 
+
+</script>
+</html>
