@@ -1,4 +1,4 @@
-# Úkol č. 4
+# Úkol č. 5
 Jednoduchá web page zobrazující data ze senzoru a obshaující funkci virtuálního termostatu
 doplněná o graf zobrazující historická data za posledních 7 dní.
 
@@ -206,4 +206,5 @@ Po výše uvdených bodech by měla být stránka s údaji ze senzoru dostupná 
 BME280 -> RPi-> Python + Flask -> Nginx (volitelně)-> Wirteguard VPN - tunel internetem -> Wireguard na Serveru-> Nginx (https) <- Prohlížeč uživatele
 
 ## Priklad konfigurace VPN:
+
 ![RPi and BME280 wiring](wireguar.png)
